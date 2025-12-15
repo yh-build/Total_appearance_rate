@@ -6,30 +6,42 @@ from datetime import datetime
 import io
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from matplotlib import font_manager, rc
 import platform
 
 st.set_page_config(page_title="출현율 계산 프로그램", layout="wide")
 
 # 한글 폰트 설정
 def set_korean_font():
+    import matplotlib.font_manager as fm
+
     if platform.system() == 'Windows':
         font_name = 'Malgun Gothic'
     elif platform.system() == 'Darwin':  # macOS
         font_name = 'AppleGothic'
     else:  # Linux (Streamlit Cloud)
-        font_name = 'NanumGothic'
-        # 폰트 캐시 재생성
-        import matplotlib.font_manager as fm
-        fm._load_fontmanager(try_read_cache=False)
+        # 설치된 폰트 확인
+        font_list = [f.name for f in fm.fontManager.ttflist]
+
+        # 사용 가능한 한글 폰트 찾기
+        korean_fonts = ['NanumGothic', 'NanumBarunGothic', 'NanumMyeongjo',
+                       'Noto Sans CJK KR', 'Noto Serif CJK KR', 'DejaVu Sans']
+
+        font_name = None
+        for font in korean_fonts:
+            if font in font_list:
+                font_name = font
+                break
+
+        if not font_name:
+            font_name = 'DejaVu Sans'  # 기본 폰트
 
     try:
-        rc('font', family=font_name)
+        plt.rc('font', family=font_name)
         plt.rcParams['axes.unicode_minus'] = False
     except Exception as e:
-        # 폰트 로드 실패 시 기본 폰트 사용
         print(f"Font loading error: {e}")
-        pass
+        # 기본 설정
+        plt.rcParams['axes.unicode_minus'] = False
 
 def get_direction_16(angle):
     """각도를 16방위로 변환"""
