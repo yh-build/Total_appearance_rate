@@ -17,13 +17,18 @@ def set_korean_font():
         font_name = 'Malgun Gothic'
     elif platform.system() == 'Darwin':  # macOS
         font_name = 'AppleGothic'
-    else:  # Linux
+    else:  # Linux (Streamlit Cloud)
         font_name = 'NanumGothic'
+        # 폰트 캐시 재생성
+        import matplotlib.font_manager as fm
+        fm._load_fontmanager(try_read_cache=False)
 
     try:
         rc('font', family=font_name)
         plt.rcParams['axes.unicode_minus'] = False
-    except:
+    except Exception as e:
+        # 폰트 로드 실패 시 기본 폰트 사용
+        print(f"Font loading error: {e}")
         pass
 
 def get_direction_16(angle):
